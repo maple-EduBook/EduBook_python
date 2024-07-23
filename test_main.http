@@ -5,7 +5,25 @@ Accept: application/json
 
 ###
 
-GET http://127.0.0.1:8000/hello/User
+POST http://127.0.0.1:8000/signup
 Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "name",
+  "password": "pwd",
+  "email": "aa@aa.com"
+}
+
+###
+
+POST 127.0.0.1:8000/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "aa@aa.com",
+  "password": "pwd"
+}
 
 ###
