@@ -11,7 +11,6 @@ app = FastAPI()
 async def root():
     return {"message": "Hello"}
 
-
 @app.post("/signup")
 async def signup(data: model.UserModel):
     db.insert_user((data.name, data.email, data.password))

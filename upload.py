@@ -2,7 +2,7 @@ import os
 from typing import Dict
 from PIL import Image
 from fastapi import UploadFile, File, HTTPException
-
+import imagedb
 
 async def upload_image(file: UploadFile | None = File(None)) -> Dict[str, str]:
     print("upload_image 실행")
@@ -15,6 +15,7 @@ async def upload_image(file: UploadFile | None = File(None)) -> Dict[str, str]:
     save_path = f"./uploads/{file.filename}"
     # 이미지 저장
     await save_image(image, save_path)
+    await imagedb.insertBLOB("aa@aa.com", save_path)
     return {"detail": "이미지 업로드 성공"}
 
 async def validate_image_type(file : UploadFile) -> UploadFile:
