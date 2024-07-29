@@ -1,6 +1,6 @@
 import sqlite3
 
-con = sqlite3.connect('user.db')
+con = sqlite3.connect('./database/user.db')
 cur = con.cursor()
 
 cur.execute("""
@@ -44,6 +44,7 @@ def select_password_by_email(user_email: str):
 
 
 if __name__ == '__main__':
+    con = sqlite3.connect('../user.db')
     if not select_user_by_email('test@test.com'):
         insert_user(('test', 'test@test.com', 'testpwd'))
 

@@ -1,10 +1,11 @@
 import os
-from typing import Dict
+from typing import Dict, Optional
 from PIL import Image
 from fastapi import UploadFile, File, HTTPException
-import imagedb
+from database.handler import imagedb
 
-async def upload_image(file: UploadFile | None = File(None)) -> Dict[str, str]:
+
+async def upload_image(email: str, file: Optional[UploadFile] = File(None)) -> Dict[str, str]:
     print("upload_image 실행")
     if not file:
         return {"detail": "이미지 없음"}
@@ -15,15 +16,18 @@ async def upload_image(file: UploadFile | None = File(None)) -> Dict[str, str]:
     save_path = f"./uploads/{file.filename}"
     # 이미지 저장
     await save_image(image, save_path)
-    await imagedb.insertBLOB("aa@aa.com", save_path)
+    await imagedb.insertBLOB(email, save_path)
     return {"detail": "이미지 업로드 성공"}
 
-async def validate_image_type(file : UploadFile) -> UploadFile:
+
+async def validate_image_type(file: UploadFile) -> UploadFile:
     if file.filename.split(".")[-1].lower() not in ["jpg", "jpeg", "png"]:
-        raise HTTPException(detail="업로드 불가능한 확장자")
+        raise HTTPException(detail="업로드 불가능한 확장자", status_code=422)
     if not file.content_type.startswith("image"):
-        raise  HTTPException(detail="이미지 파일만 업로드 가능")
+        raise HTTPException(detail="이미지 파일만 업로드 가능", status_code=422)
     return file
+
+
 async def save_image(image: Image.Image, path: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     image.save(path)
