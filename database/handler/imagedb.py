@@ -7,7 +7,8 @@ cur.execute("""
 CREATE TABLE IF NOT EXISTS Image(
     id integer primary key autoincrement,
     email text,
-    image text
+    image text,
+    date date default (datetime('now','localtime'))
 )
 """)
 
@@ -31,5 +32,5 @@ async def insertBLOB(email, image):
 
 
 def select_image_by_email(user_email: str):
-    cur.execute("select * from Image where email = ?", (user_email,))
-    con.commit()
+    cur.execute("select * from Image where email = ? order by date desc limit 1", (user_email,))
+    return cur.fetchall()

@@ -1,3 +1,4 @@
+import base64
 import os
 from typing import Optional, Annotated
 
@@ -8,6 +9,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 
 import model
 from database.handler import userdb
+from database.handler.imagedb import select_image_by_email
 from util.upload import upload_image
 
 load_dotenv()
@@ -38,4 +40,19 @@ async def login(from_data: OAuth2PasswordRequestForm = Depends()) -> model.Token
 async def upload(token: Annotated[str, Depends(oauth2_scheme)], file: Optional[UploadFile] = File(None)):
     user_data = jwt.decode(token, jwt_secret, jwt_algorithm)
     result = await upload_image(user_data['email'], file)
+    return result
+
+
+@app.post("/process")
+async def process(token: Annotated[str, Depends(oauth2_scheme)]):
+    user_data = jwt.decode(token, jwt_secret, jwt_algorithm)
+    res = select_image_by_email(user_data['email'])
+    img = base64.b64encode(res[0][2]).decode('utf-8')
+    # todo: processing
+    result = {
+        "title": "AA 테스트 타이틀 123",
+        "image": [img],
+        "description": [],
+        "date": "2024.04.21"
+    }
     return result
